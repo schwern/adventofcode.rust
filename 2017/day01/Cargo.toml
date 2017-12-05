@@ -1,6 +1,6 @@
 [package]
-name = "advent_day01"
+name = "day01"
 version = "0.1.0"
-authors = ["Michael G Schwern <schwern@pobox.com>"]
+authors = ["Michael G. Schwern <schwern@pobox.com>"]
 
 [dependencies]
