@@ -19,22 +19,17 @@ fn captcha(captcha: &str) -> u32 {
     if captcha.len() < 2 {
         return 0;
     }
-    
-    let first = captcha.chars().nth(0).expect("At least one digit");
-    let mut iter = captcha.chars().peekable();
-    let mut sum : u32 = 0;
-    
-    loop {
-        let curr_item = iter.next();
 
-        let matched = match( curr_item, iter.peek() ) {
-            (Some(curr),Some(&next))   => curr == next,
-            (Some(curr),None)          => curr == first,
-            (None,_)                   => break,
-        };
-        
-        if matched {
-            let num = curr_item.expect("An item").to_digit(10).expect("Not a digit");
+    let nums : Vec<u32> = captcha
+                            .chars()
+                            .map( |c| c.to_digit(10).expect("A digit") )
+                            .collect();
+    
+    let len = nums.len();
+    let mut sum : u32 = 0;
+    for (i, &num) in nums.iter().enumerate() {
+        let next = nums[(i+1)%len];
+        if num == next {
             sum += num;
         }
     }
