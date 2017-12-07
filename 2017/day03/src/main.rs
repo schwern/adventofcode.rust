@@ -139,48 +139,22 @@ impl Ring {
             return Ok(0);
         }
         
-        let mut pos : i32 = i32::try_from(square).unwrap()
-                          - i32::try_from(self.start).unwrap()
-                          + 1;
-        pos %= i32::from(self.size) - 1;
-        pos -= (i32::from(self.size)-1)/2;
-        return Ok( u32::try_from(pos.abs()).unwrap() );
+        let middle : u32 = (u32::from(self.size)-1)/2;
+        let mut pos = square - self.start + 1;
+        pos %= u32::from(self.size) - 1;
+
+        if pos > middle {
+            return Ok(pos - middle);
+        }
+        else {
+            return Ok(middle - pos);
+        }
     }
     
     fn manhattan_distance( square : u32 ) -> u32 {
         let ring = Ring::for_square( square );
         return ring.distance_from_middle_of_side( square ).unwrap()
                 + u32::from(ring.num);
-    }
-}
-
-#[derive(Debug, Copy, Clone)]
-pub struct TryFromIntError(());
-
-pub trait TryFrom<T>: Sized {
-    type Error;
-    fn try_from(value: T) -> Result<Self, Self::Error>;
-}
-
-impl TryFrom<u32> for i32 {
-    type Error = TryFromIntError;
-    fn try_from(u: u32) -> Result<i32, TryFromIntError> {
-        if u > (i32::max_value() as u32) {
-            Err(TryFromIntError(()))
-        } else {
-            Ok(u as i32)
-        }
-    }
-}
-
-impl TryFrom<i32> for u32 {
-    type Error = TryFromIntError;
-    fn try_from(i: i32) -> Result<u32, TryFromIntError> {
-        if i < (u32::min_value() as i32) {
-            Err(TryFromIntError(()))
-        } else {
-            Ok(i as u32)
-        }
     }
 }
 
