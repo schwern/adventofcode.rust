@@ -9,7 +9,7 @@ mod tests {
 
     #[test]
     fn test_get_manhattan_distance() {
-        let mut tests : HashMap<u32,i64> = HashMap::new();
+        let mut tests : HashMap<u32,u32> = HashMap::new();
         tests.insert(1, 0);
         tests.insert(12,3);
         tests.insert(23,2);
@@ -131,7 +131,7 @@ impl Ring {
         return self.start <= square && square <= self.end;
     }
     
-    fn distance_from_middle_of_side( &self, square : u32 ) -> Result<i64, RingError> {
+    fn distance_from_middle_of_side( &self, square : u32 ) -> Result<u32, RingError> {
         if !self.is_in_ring(square) {
             return Err(RingError::NotInRing);
         }
@@ -139,16 +139,48 @@ impl Ring {
             return Ok(0);
         }
         
-        let mut pos : i64 = i64::from(square) - i64::from(self.start) + 1;
-        pos %= i64::from(self.size) - 1;
-        pos -= (i64::from(self.size)-1)/2;
-        return Ok(pos.abs());
+        let mut pos : i32 = i32::try_from(square).unwrap()
+                          - i32::try_from(self.start).unwrap()
+                          + 1;
+        pos %= i32::from(self.size) - 1;
+        pos -= (i32::from(self.size)-1)/2;
+        return Ok( u32::try_from(pos.abs()).unwrap() );
     }
     
-    fn manhattan_distance( square : u32 ) -> i64 {
+    fn manhattan_distance( square : u32 ) -> u32 {
         let ring = Ring::for_square( square );
         return ring.distance_from_middle_of_side( square ).unwrap()
-                + i64::from(ring.num);
+                + u32::from(ring.num);
+    }
+}
+
+#[derive(Debug, Copy, Clone)]
+pub struct TryFromIntError(());
+
+pub trait TryFrom<T>: Sized {
+    type Error;
+    fn try_from(value: T) -> Result<Self, Self::Error>;
+}
+
+impl TryFrom<u32> for i32 {
+    type Error = TryFromIntError;
+    fn try_from(u: u32) -> Result<i32, TryFromIntError> {
+        if u > (i32::max_value() as u32) {
+            Err(TryFromIntError(()))
+        } else {
+            Ok(u as i32)
+        }
+    }
+}
+
+impl TryFrom<i32> for u32 {
+    type Error = TryFromIntError;
+    fn try_from(i: i32) -> Result<u32, TryFromIntError> {
+        if i < (u32::min_value() as i32) {
+            Err(TryFromIntError(()))
+        } else {
+            Ok(i as u32)
+        }
     }
 }
 
