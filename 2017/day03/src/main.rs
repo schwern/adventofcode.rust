@@ -3,7 +3,7 @@ extern crate day03;
 #[macro_use]
 extern crate clap;
 
-use day03::Ring;
+use day03::ring;
 
 fn parse_u32( input : &str ) -> u32 {
     return input.parse().expect("positive integer");
@@ -38,9 +38,9 @@ fn main() {
 }
 
 fn part_one(input : u32) {
-    println!("{}", Ring::manhattan_distance(input));
+    println!("{}", ring::Ring::manhattan_distance(input));
 }
 
 fn part_two(input : u32) {
-    println!("input: {}", input);
+    println!("{}", input);
 }
