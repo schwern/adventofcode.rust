@@ -9,7 +9,7 @@ mod tests {
     
     #[test]
     fn test_num_jumps() {
-        assert_eq!( num_jumps( vec![0,3,0,1,-3] ), 5 );
+        assert_eq!( num_jumps( vec![0,3,0,1,-3] ), 10 );
     }
 }
 
@@ -22,7 +22,12 @@ fn num_jumps( mut offsets : Vec<i32> ) -> usize {
                 steps += 1;
                 
                 pos += *jump;
-                *jump += 1;
+                if *jump >= 3 {
+                    *jump -= 1;
+                }
+                else {
+                    *jump += 1;
+                }
             },
             None        => return steps,
         }
