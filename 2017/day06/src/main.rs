@@ -10,7 +10,7 @@ mod tests {
     #[test]
     fn test_num_cycles_before_repeat() {
         let banks = vec![0,2,7,0];
-        assert_eq!( num_cycles_before_repeat( banks ), 5 );
+        assert_eq!( num_cycles_before_repeat( banks ), (4,5) );
     }
     
     #[test]
@@ -31,21 +31,25 @@ mod tests {
     }
 }
 
-fn num_cycles_before_repeat( _banks : Vec<i32> ) -> u32 {
+fn num_cycles_before_repeat( _banks : Vec<i32> ) -> (u32,u32) {
     let mut banks = _banks.clone();
     let mut seen = HashMap::new();
     
+    let mut num_cycles : u32 = 1;
+    let first_cycle;
     loop {
-        match seen.get(&banks) {
-            Some(_)     => break,
-            None        => {
-                seen.insert(banks.clone(), true );
-                next_cycle(&mut banks);
-            }
+        if seen.contains_key(&banks) {
+            first_cycle = *seen.get(&banks).unwrap();
+            break;
         }
+        else {
+            seen.insert(banks.clone(), num_cycles );
+            next_cycle(&mut banks);
+            num_cycles += 1;
+        }        
     }
     
-    return seen.len() as u32;
+    return ((num_cycles - first_cycle), seen.len() as u32);
 }
 
 // Can't use enumerate().max_by(),
@@ -92,5 +96,6 @@ fn main() {
         .map(|x| x.parse().expect("integer"))
         .collect();
     
-    println!("{}", num_cycles_before_repeat(banks));
+    let(cycles,_) = num_cycles_before_repeat(banks);
+    println!("{}", cycles);
 }
