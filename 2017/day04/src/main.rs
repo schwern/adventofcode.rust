@@ -11,19 +11,19 @@ mod tests {
     use super::*;
     
     #[test]
-    fn test_is_valid_password() {
+    fn test_is_valid_password1() {
         let tests = hashmap!{
             "aa bb cc dd ee" => true,
             "aa bb cc dd aa" => false,
             "aa bb cc dd aaa" => true,
         };
         for (arg,want) in tests {
-            assert_eq!( is_valid_password(arg), want );
+            assert_eq!( is_valid_password1(arg), want );
         }
     }
 }
 
-fn is_valid_password( password : &str ) -> bool {
+fn is_valid_password1( password : &str ) -> bool {
     let mut words : HashMap<&str,usize> = hashmap!{};
     for word in password.split(" ") {
         let count = words.entry(word).or_insert(0);
@@ -44,7 +44,7 @@ fn main() {
     
     let mut num_valid = 0;
     for line in reader.lines() {
-        if is_valid_password( &line.unwrap() ) {
+        if is_valid_password1( &line.unwrap() ) {
             num_valid += 1;
         }
     }
