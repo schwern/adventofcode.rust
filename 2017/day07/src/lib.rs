@@ -12,7 +12,7 @@ mod tests {
     fn test_from() {
         assert_eq!(
             Node::try_from("pbga (66)").unwrap(),
-            Node::new( "pbga", 66 )
+            Node::new( "pbga", Some(66), None )
         );
     }
     
@@ -20,7 +20,19 @@ mod tests {
     fn test_from_with_children() {
         assert_eq!(
             Node::try_from("fwft (72) -> ktlj, cntj, xhth").unwrap(),
-            Node::new("fwft", 72)
+            Node::new("fwft", Some(72), None )
+        );
+    }
+    
+    #[test]
+    fn test_has_children() {
+        assert!( !Node::new("foo", None, None ).has_children() );
+        assert!( !Node::new("foo", None, Some(vec![])).has_children() );
+        assert!(
+            Node::new(
+                "foo", None,
+                Some(vec![ Node::new("bar", None, None) ])
+            ).has_children()
         );
     }
 }
@@ -28,8 +40,8 @@ mod tests {
 #[derive(PartialEq, Clone, Debug)]
 pub struct Node {
     name: String,
-    weight: usize,
-    children: Vec<Node>
+    weight: Option<usize>,
+    children: Option<Vec<Node>>,
 }
 
 #[derive(PartialEq, Clone, Debug)]
@@ -40,16 +52,19 @@ pub enum ParseNodeError {
 }
 
 impl Node {
-    pub fn new( name: &str, weight: usize ) -> Node {
+    pub fn new( name: &str, weight: Option<usize>, children: Option<Vec<Node>> ) -> Node {
         return Node{
             name: String::from(name),
             weight: weight,
-            children: Vec::new()
+            children: children,
         };
     }
     
     pub fn has_children(&self) -> bool {
-        return !self.children.is_empty();
+        return match self.children {
+            Some(ref children)  => !children.is_empty(),
+            None                => false
+        };
     }
 
     pub fn try_from( from: &str ) -> Result<Node,ParseNodeError> {
@@ -79,7 +94,8 @@ impl Node {
             .unwrap();
         let node = Node::new(
             name,
-            weight,
+            Some(weight),
+            None,
         );
         
         return Ok(node);
