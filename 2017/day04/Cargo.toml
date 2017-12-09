@@ -1,0 +1,7 @@
+[package]
+name = "day04"
+version = "0.1.0"
+authors = ["Michael G. Schwern <schwern@pobox.com>"]
+
+[dependencies]
+maplit = "1.0.0"
