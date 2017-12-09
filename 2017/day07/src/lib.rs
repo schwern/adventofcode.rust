@@ -18,9 +18,14 @@ mod tests {
     
     #[test]
     fn test_from_with_children() {
+        let want_children = vec![
+            Node::new("ktlj", None, None),
+            Node::new("cntj", None, None),
+            Node::new("xhth", None, None),
+        ];
         assert_eq!(
             Node::try_from("fwft (72) -> ktlj, cntj, xhth").unwrap(),
-            Node::new("fwft", Some(72), None )
+            Node::new("fwft", Some(72), Some(want_children) )
         );
     }
     
@@ -92,12 +97,27 @@ impl Node {
             .as_str()
             .parse()
             .unwrap();
+            
+        let children = match caps.name("children") {
+            Some(children_from) => Some(Node::parse_children(children_from.as_str())?),
+            None                => None,
+        };
+        
         let node = Node::new(
             name,
             Some(weight),
-            None,
+            children,
         );
         
         return Ok(node);
+    }
+    
+    fn parse_children( from: &str ) -> Result<Vec<Node>,ParseNodeError> {
+        let mut children = Vec::new();
+        for child_from in from.split(", ") {
+            children.push( Node::new( child_from, None, None ) )
+        }
+        
+        return Ok(children);
     }
 }
