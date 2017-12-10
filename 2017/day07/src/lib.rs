@@ -44,9 +44,9 @@ mod tests {
 
 #[derive(PartialEq, Clone, Debug)]
 pub struct Node {
-    name: String,
-    weight: Option<usize>,
-    children: Option<Vec<Node>>,
+    pub name: String,
+    pub weight: Option<usize>,
+    pub children: Option<Vec<Node>>,
 }
 
 #[derive(PartialEq, Clone, Debug)]
