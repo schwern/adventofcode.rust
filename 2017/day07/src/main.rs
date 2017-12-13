@@ -16,12 +16,14 @@ mod tests {
 fn find_bottom_node_name( lines: std::io::Lines<std::io::BufReader<std::fs::File>> ) -> String {
     let mut seen = HashMap::new();
 
+    let mut np = day07::NodeParser::new();
+
     for line in lines {
-        let node = day07::Node::try_from( &line.unwrap() ).unwrap();
+        let node = np.try_from( &line.unwrap() ).unwrap();
         seen.entry( node.name.clone() ).or_insert( false );
         
         if node.has_children() {
-            for child in node.children.unwrap() {
+            for child in &node.children.unwrap() {
                 seen.insert( child.name.clone(), true );
             }
         }
