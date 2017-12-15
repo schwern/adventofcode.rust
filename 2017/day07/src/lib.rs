@@ -29,8 +29,8 @@ mod tests {
             Node::new("xhth", None, None),
         ];
         assert_eq!(
-            *np.try_from("fwft (72) -> ktlj, cntj, xhth").unwrap(),
-            Node::new("fwft", Some(72), Some(want_children) )
+            np.try_from("fwft (72) -> ktlj, cntj, xhth").unwrap(),
+            &Node::new("fwft", Some(72), Some(want_children) )
         );
     }
     
@@ -48,20 +48,20 @@ mod tests {
 }
 
 #[derive(PartialEq, Clone, Debug)]
-pub struct NodeParser {
-    map: HashMap<String,Node>,
-    pub root: Option<Node>,
+pub struct NodeParser<'a> {
+    map: HashMap<String,&'a Node>,
+    pub root: Option<&'a Node>,
 }
 
-impl NodeParser {
-    pub fn new() -> NodeParser {
+impl<'a> NodeParser<'a> {
+    pub fn new() -> NodeParser<'a> {
         return NodeParser{
             map:   HashMap::new(),
             root:       None
         };
     }
     
-    pub fn try_from( &mut self, from: &str ) -> Result<&Node,ParseNodeError> {
+    pub fn try_from( &mut self, from: &str ) -> Result<&'a Node,ParseNodeError> {
         lazy_static! {
             static ref PARSE_RE: Regex = Regex::new(r"(?x)
                 # name
@@ -88,13 +88,15 @@ impl NodeParser {
             .unwrap();
             
         let children = match caps.name("children") {
-            Some(children_from) => Some(self.parse_children(children_from.as_str())?),
+            Some(children_from) => Some(
+                self.parse_children(children_from.as_str())?
+            ),
             None                => None,
         };
         
-        let node = self.map.entry(String::from(name)).or_insert(
-            Node::new( name, None, None )
-        );
+        let mut node = self.map
+            .entry(String::from(name))
+            .or_insert( &Node::new( name, None, None ) );
 
         node.weight = Some(weight);
         node.children = children;
@@ -104,8 +106,8 @@ impl NodeParser {
     
     fn parse_children( &self, from: &str ) -> Result<Vec<Node>,ParseNodeError> {
         let mut children = Vec::new();
-        for child_from in from.split(", ") {
-            children.push( Node::new( child_from, None, None ) )
+        for child_name in from.split(", ") {
+            children.push( Node::new( child_name, None, None ) );
         }
         
         return Ok(children);
